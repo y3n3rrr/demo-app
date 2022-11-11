@@ -6,7 +6,9 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Container from "react-bootstrap/Container";
 import Modal from '../components/modal'
-import {getData} from '../utils/api'
+import { getData } from '../utils/api'
+import {useSelector, useDispatch} from 'react-redux'
+import {GetProducts} from '../actions/productActions'
 
 export default function Profile() {
     const [products, setProducts] = useState([]);
@@ -23,10 +25,13 @@ export default function Profile() {
     const [description, setDescription] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState({});
 
+    const reduxData = useSelector(state => state.products)
+    const dispatch = useDispatch()
+
     useEffect(() => {
         getDummyJosn()
+        dispatch(GetProducts())
     }, [])
-
 
     const getDummyJosn = async () => {
         const result = await getData("https://dummyjson.com/products");
@@ -38,22 +43,24 @@ export default function Profile() {
     const renderProducts = () => {
         const result = products.map((val, i) => {
             return (
-                <Card key={val.id} style={{ width: '18rem', marginTop: 10 }}>
-                    <Card.Img variant="top" src="holder.js/100px180" />
-                    <Card.Body>
-                        <Card.Title>{val.title}</Card.Title>
-                        <Card.Text>
-                            {val.description}
-                        </Card.Text>
-                        <Button variant="primary" onClick={() => selectProduct(val)}>Show Details</Button>
-                    </Card.Body>
-                </Card>
+                <Col xs={4}>
+                    <Card key={val.id} style={{ width: '18rem', marginTop: 10 }}>
+                        <Card.Img variant="top" src={val.images[0]} />
+                        <Card.Body>
+                            <Card.Title>{val.title}</Card.Title>
+                            <Card.Text>
+                                {val.description}
+                            </Card.Text>
+                            <Button variant="primary" onClick={() => selectProduct(val)}>Show Details</Button>
+                        </Card.Body>
+                    </Card>
+                </Col>
             )
         })
         return result;
     }
 
-    const selectProduct = (data) =>{
+    const selectProduct = (data) => {
         //const {title, description,price, discountPercentage, rating, stock, brand, category} = data
         // setTitle(title)
         // setStock(stock)
@@ -69,17 +76,9 @@ export default function Profile() {
 
     return (
         <div>
-            {total}
-            {number}
             <Container>
                 <Row>
-                    <Col></Col>
-                    <Col xs={6}>
-                        <div>
-                            {renderProducts()}
-                        </div>
-                    </Col>
-                    <Col></Col>
+                    {renderProducts()}
                 </Row>
             </Container>
             <Modal
