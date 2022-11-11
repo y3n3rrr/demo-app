@@ -6,12 +6,22 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Container from "react-bootstrap/Container";
 import Modal from '../components/modal'
+import {getData} from '../utils/api'
 
 export default function Profile() {
     const [products, setProducts] = useState([]);
     const [total, setTotal] = useState();
     const [number, setNumber] = useState(0);
     const [modalShow, setModalShow] = useState(false);
+    const [title, setTitle] = useState("");
+    const [stock, setStock] = useState(0);
+    const [discountPercentage, setDiscountPercentage] = useState(0);
+    const [rating, setRating] = useState(0);
+    const [brand, setBrand] = useState(0);
+    const [price, setPrice] = useState(0);
+    const [category, setCategory] = useState(0);
+    const [description, setDescription] = useState(0);
+    const [selectedProduct, setSelectedProduct] = useState({});
 
     useEffect(() => {
         getDummyJosn()
@@ -19,10 +29,8 @@ export default function Profile() {
 
 
     const getDummyJosn = async () => {
-        const response = await axios.get("https://dummyjson.com/products")
-        console.log('response', response)
-        const { products, total, limit } = response.data
-
+        const result = await getData("https://dummyjson.com/products");
+        const { products, total, limit } = result
         setProducts(products)
         setTotal(total)
     }
@@ -30,16 +38,14 @@ export default function Profile() {
     const renderProducts = () => {
         const result = products.map((val, i) => {
             return (
-                <Card style={{ width: '18rem', marginTop: 10 }}>
+                <Card key={val.id} style={{ width: '18rem', marginTop: 10 }}>
                     <Card.Img variant="top" src="holder.js/100px180" />
                     <Card.Body>
                         <Card.Title>{val.title}</Card.Title>
                         <Card.Text>
                             {val.description}
                         </Card.Text>
-                        <Button variant="primary" onClick={() => setModalShow(true)}>Show Details</Button>
-                        <button className='araButonu' onClick={() => setModalShow(true)}> ara </button>
-                        <button className='aramaButonu' onClick={() => setModalShow(true)}> arama </button>
+                        <Button variant="primary" onClick={() => selectProduct(val)}>Show Details</Button>
                     </Card.Body>
                 </Card>
             )
@@ -47,8 +53,24 @@ export default function Profile() {
         return result;
     }
 
+    const selectProduct = (data) =>{
+        //const {title, description,price, discountPercentage, rating, stock, brand, category} = data
+        // setTitle(title)
+        // setStock(stock)
+        // setDiscountPercentage(discountPercentage)
+        // setDescription(description)
+        // setPrice(price)
+        // setRating(rating)
+        // setBrand(brand)
+        // setCategory(category)
+        setSelectedProduct(data)
+        setModalShow(true)
+    }
+
     return (
         <div>
+            {total}
+            {number}
             <Container>
                 <Row>
                     <Col></Col>
@@ -61,6 +83,15 @@ export default function Profile() {
                 </Row>
             </Container>
             <Modal
+                // title={title}
+                // stock={stock}
+                // description={description}
+                // price={price}
+                // discountPercentage={discountPercentage}
+                // rating={rating}
+                // brand={brand}
+                // category={category}
+                {...selectedProduct}
                 show={modalShow}
                 onHide={() => setModalShow(false)}
             />
